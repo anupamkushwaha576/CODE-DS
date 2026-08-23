@@ -1,0 +1,165 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+    int data;
+    struct node *next;
+    struct node *prev;
+};
+
+struct node *head = NULL;
+
+/* Function declarations */
+void insertBeginning();
+void insertEnd();
+void deleteBeginning();
+void deleteEnd();
+void displayForward();
+void displayBackward();
+void search();
+
+int main() {
+    int choice;
+    while (1) {
+        printf("\n=== DOUBLY CIRCULAR LINKED LIST MENU ===\n");
+        printf("1. Insert at Beginning\n");
+        printf("2. Insert at End\n");
+        printf("3. Delete from Beginning\n");
+        printf("4. Delete from End\n");
+        printf("5. Display Forward\n");
+        printf("6. Display Backward\n");
+        printf("7. Search\n");
+        printf("8. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1: insertBeginning(); break;
+            case 2: insertEnd(); break;
+            case 3: deleteBeginning(); break;
+            case 4: deleteEnd(); break;
+            case 5: displayForward(); break;
+            case 6: displayBackward(); break;
+            case 7: search(); break;
+            case 8: exit(0);
+            default: printf("Invalid choice!\n");
+        }
+    }
+    return 0;
+}
+
+/* INSERT AT BEGINNING */
+void insertBeginning() {
+    struct node *newnode = (struct node*)malloc(sizeof(struct node));
+    int item;
+    if (!newnode) { printf("Overflow!\n"); return; }
+    printf("Enter data: "); scanf("%d", &item);
+    newnode->data = item;
+    if (!head) {
+        head = newnode;
+        head->next = head;
+        head->prev = head;
+    } else {
+        struct node *last = head->prev;
+        newnode->next = head;
+        newnode->prev = last;
+        last->next = newnode;
+        head->prev = newnode;
+        head = newnode;
+    }
+    printf("Node inserted at beginning.\n");
+}
+
+/* INSERT AT END */
+void insertEnd() {
+    struct node *newnode = (struct node*)malloc(sizeof(struct node));
+    int item;
+    if (!newnode) { printf("Overflow!\n"); return; }
+    printf("Enter data: "); scanf("%d", &item);
+    newnode->data = item;
+    if (!head) {
+        head = newnode;
+        head->next = head;
+        head->prev = head;
+    } else {
+        struct node *last = head->prev;
+        newnode->next = head;
+        newnode->prev = last;
+        last->next = newnode;
+        head->prev = newnode;
+    }
+    printf("Node inserted at end.\n");
+}
+
+/* DELETE FROM BEGINNING */
+void deleteBeginning() {
+    if (!head) { printf("Underflow!\n"); return; }
+    if (head->next == head) {
+        free(head); head = NULL;
+    } else {
+        struct node *last = head->prev;
+        struct node *temp = head;
+        head = head->next;
+        head->prev = last;
+        last->next = head;
+        free(temp);
+    }
+    printf("Node deleted from beginning.\n");
+}
+
+/* DELETE FROM END */
+void deleteEnd() {
+    if (!head) { printf("Underflow!\n"); return; }
+    if (head->next == head) {
+        free(head); head = NULL;
+    } else {
+        struct node *last = head->prev;
+        struct node *secondLast = last->prev;
+        secondLast->next = head;
+        head->prev = secondLast;
+        free(last);
+    }
+    printf("Node deleted from end.\n");
+}
+
+/* DISPLAY FORWARD */
+void displayForward() {
+    if (!head) { printf("List is empty!\n"); return; }
+    struct node *temp = head;
+    printf("Forward: ");
+    do {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    } while (temp != head);
+    printf("(HEAD)\n");
+}
+
+/* DISPLAY BACKWARD */
+void displayBackward() {
+    if (!head) { printf("List is empty!\n"); return; }
+    struct node *last = head->prev;
+    struct node *temp = last;
+    printf("Backward: ");
+    do {
+        printf("%d -> ", temp->data);
+        temp = temp->prev;
+    } while (temp != last);
+    printf("(HEAD)\n");
+}
+
+/* SEARCH */
+void search() {
+    if (!head) { printf("List is empty!\n"); return; }
+    int item, pos = 1, found = 0;
+    printf("Enter element to search: ");
+    scanf("%d", &item);
+    struct node *temp = head;
+    do {
+        if (temp->data == item) {
+            printf("Element %d found at position %d.\n", item, pos);
+            found = 1; break;
+        }
+        temp = temp->next; pos++;
+    } while (temp != head);
+    if (!found) printf("Element not found.\n");
+}
